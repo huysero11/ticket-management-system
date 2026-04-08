@@ -1,0 +1,47 @@
+# =========================
+# Backend - .NET / ASP.NET
+# =========================
+
+# Build
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+
+# Rider / ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+# VS Code
+.vscode/
+
+# Visual Studio
+.vs/
+
+# Logs
+*.log
+
+# Environment / secrets
+**/appsettings.Local.json
+**/appsettings.*.local.json
+**/.env
+**/.env.*
+
+# NuGet
+*.nupkg
+packages/
+.nuget/
+
+# Test results / coverage
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# OS files
+.DS_Store
+Thumbs.db
