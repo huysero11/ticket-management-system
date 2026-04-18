@@ -1,7 +1,7 @@
 using MediatR;
 using TicketManagementSystem.Application.Abstractions.Security;
 using TicketManagementSystem.Domain.Entities;
-using TicketManagementSystem.Application.Abstractions.Repositoties;
+using TicketManagementSystem.Application.Abstractions.Repositories;
 
 namespace TicketManagementSystem.Application.Features.Auth.Register;
 

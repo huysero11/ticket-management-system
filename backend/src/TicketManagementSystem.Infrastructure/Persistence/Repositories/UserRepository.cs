@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TicketManagementSystem.Domain.Entities;
-using TicketManagementSystem.Application.Abstractions.Repositoties;
+using TicketManagementSystem.Application.Abstractions.Repositories;
 
 namespace TicketManagementSystem.Infrastructure.Persistence.Repositories;
 
@@ -22,5 +22,10 @@ public sealed class UserRepository : IUserRepository
     {
         await _dbContext.Users.AddAsync(user, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
+    {
+        return _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
     }
 }
