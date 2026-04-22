@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using TicketManagementSystem.Application.Features.Auth.GetMe;
 using TicketManagementSystem.Application.Features.Auth.Login;
 using TicketManagementSystem.Application.Features.Auth.Register;
 
@@ -62,5 +64,39 @@ public sealed class AuthController : ControllerBase
                 message = exception.Message
             });
         }
+    }
+
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMe()
+    {
+        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        var fullName = User.FindFirstValue(ClaimTypes.Name);
+
+        if (string.IsNullOrWhiteSpace(userIdValue) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(fullName))
+        {
+            return Unauthorized(new
+            {
+                status = "failed",
+                message = "Invalid token."
+            });
+        }
+
+        if (!Guid.TryParse(userIdValue, out var userId))
+        {
+            return Unauthorized(new
+            {
+                status = "failed",
+                message = "Invalid token."
+            });
+        }
+
+        var response = new GetMeResponse(userId, email, fullName);
+        return Ok(new
+        {
+            status = "success",
+            message = "User information retrieved successfully.",
+            data = response
+        });
     }
 }
