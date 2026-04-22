@@ -7,4 +7,8 @@ public interface ITicketCategoryRepository
     Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
     Task AddAsync(TicketCategory ticketCategory, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<TicketCategory>> GetAllAsync(
+        bool includeInactive,
+        CancellationToken cancellationToken = default
+    );
 }

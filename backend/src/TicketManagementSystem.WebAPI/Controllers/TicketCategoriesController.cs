@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TicketManagementSystem.Application.Features.TicketCategories.CreateTicketCategory;
+using TicketManagementSystem.Application.Features.TicketCategories.GetTicketCategories;
 
 namespace TicketManagementSystem.WebAPI.Controllers;
 
@@ -37,5 +38,18 @@ public sealed class TicketCategoriesController : ControllerBase
                 message = exception.Message
             });
         }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll([FromQuery] GetTicketCategoriesQuery query, CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(query, cancellationToken);
+
+        return Ok(new
+        {
+            status = "success",
+            message = "Ticket categories retrieved successfully.",
+            data = result
+        });
     }
 }

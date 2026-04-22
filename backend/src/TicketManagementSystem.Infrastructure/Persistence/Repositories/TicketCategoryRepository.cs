@@ -24,4 +24,18 @@ public sealed class TicketCategoryRepository : ITicketCategoryRepository
         await _dbContext.TicketCategories.AddAsync(ticketCategory, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<TicketCategory>> GetAllAsync(
+        bool includeInactive,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = _dbContext.TicketCategories.AsNoTracking();
+        if (!includeInactive)
+        {
+            query = query.Where(tc => tc.IsActive);
+        }
+
+        return await query.ToListAsync(cancellationToken);
+    }
 }
