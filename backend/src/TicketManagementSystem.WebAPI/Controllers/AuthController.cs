@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TicketManagementSystem.Application.Features.Auth.GetMe;
 using TicketManagementSystem.Application.Features.Auth.Login;
+using TicketManagementSystem.Application.Features.Auth.Refresh;
 using TicketManagementSystem.Application.Features.Auth.Register;
 
 namespace TicketManagementSystem.WebAPI.Controllers;
@@ -98,5 +99,29 @@ public sealed class AuthController : ControllerBase
             message = "User information retrieved successfully.",
             data = response
         });
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand command, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _sender.Send(command, cancellationToken);
+
+            return Ok(new
+            {
+                status = "success",
+                message = "Token refreshed successfully.",
+                data = result
+            });
+        }
+        catch (UnauthorizedAccessException exception)
+        {
+            return Unauthorized(new
+            {
+                status = "failed",
+                message = exception.Message
+            });
+        }
     }
 }
