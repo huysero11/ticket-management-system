@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TicketManagementSystem.Application.Features.Auth.GetMe;
 using TicketManagementSystem.Application.Features.Auth.Login;
+using TicketManagementSystem.Application.Features.Auth.Logout;
 using TicketManagementSystem.Application.Features.Auth.Refresh;
 using TicketManagementSystem.Application.Features.Auth.Register;
 
@@ -113,6 +114,29 @@ public sealed class AuthController : ControllerBase
                 status = "success",
                 message = "Token refreshed successfully.",
                 data = result
+            });
+        }
+        catch (UnauthorizedAccessException exception)
+        {
+            return Unauthorized(new
+            {
+                status = "failed",
+                message = exception.Message
+            });
+        }
+    }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout([FromBody] LogoutCommand command, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _sender.Send(command, cancellationToken);
+
+            return Ok(new
+            {
+                status = "success",
+                message = "User logged out successfully."
             });
         }
         catch (UnauthorizedAccessException exception)
