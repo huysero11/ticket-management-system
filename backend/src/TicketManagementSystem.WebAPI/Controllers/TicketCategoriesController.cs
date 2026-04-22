@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TicketManagementSystem.Application.Features.TicketCategories.CreateTicketCategory;
 using TicketManagementSystem.Application.Features.TicketCategories.GetTicketCategories;
+using TicketManagementSystem.Application.Features.TicketCategories.GetTicketCategoryById;
 
 namespace TicketManagementSystem.WebAPI.Controllers;
 
@@ -51,5 +52,20 @@ public sealed class TicketCategoriesController : ControllerBase
             message = "Ticket categories retrieved successfully.",
             data = result
         });
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        var query = new GetTicketCategoryByIdQuery(id);
+        var result = await _sender.Send(query, cancellationToken);
+
+        return Ok(new
+        {
+            status = "success",
+            message = "Ticket category retrieved successfully.",
+            data = result
+        });
+
     }
 }

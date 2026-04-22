@@ -11,4 +11,5 @@ public interface ITicketCategoryRepository
         bool includeInactive,
         CancellationToken cancellationToken = default
     );
+    Task<TicketCategory?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 }

@@ -38,4 +38,11 @@ public sealed class TicketCategoryRepository : ITicketCategoryRepository
 
         return await query.ToListAsync(cancellationToken);
     }
+
+    public async Task<TicketCategory?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.TicketCategories
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
 }
