@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TicketManagementSystem.Application.Features.TicketCategories.CreateTicketCategory;
+using TicketManagementSystem.Application.Features.TicketCategories.DeleteTicketCategory;
 using TicketManagementSystem.Application.Features.TicketCategories.GetTicketCategories;
 using TicketManagementSystem.Application.Features.TicketCategories.GetTicketCategoryById;
 using TicketManagementSystem.Application.Features.TicketCategories.UpdateTicketCategory;
@@ -92,6 +93,30 @@ public sealed class TicketCategoriesController : ControllerBase
             {
                 status = "failed",
                 message = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new
+            {
+                status = "failed",
+                message = ex.Message
+            });
+        }
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var command = new DeleteTicketCategoryCommand(id);
+            await _sender.Send(command, cancellationToken);
+            
+            return Ok(new
+            {
+                status = "success",
+                message = "Ticket category deleted successfully."
             });
         }
         catch (InvalidOperationException ex)
