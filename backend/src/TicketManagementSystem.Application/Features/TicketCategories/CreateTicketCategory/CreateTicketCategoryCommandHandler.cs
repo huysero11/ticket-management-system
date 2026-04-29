@@ -17,7 +17,7 @@ public sealed class CreateTicketCategoryCommandHandler :
     public async Task<CreateTicketCategoryResponse> Handle(CreateTicketCategoryCommand request, 
                                         CancellationToken cancellationToken)
     {
-        var existed = await _ticketCategoryRepository.ExistsByNameAsync(request.Name, cancellationToken);
+        var existed = await _ticketCategoryRepository.ExistsByNameAsync(request.Name, null, cancellationToken);
         if (existed)
         {
             throw new InvalidOperationException("Ticket category with the same name already exists.");

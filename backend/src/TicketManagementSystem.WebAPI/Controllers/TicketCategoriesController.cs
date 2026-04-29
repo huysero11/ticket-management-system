@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TicketManagementSystem.Application.Features.TicketCategories.CreateTicketCategory;
 using TicketManagementSystem.Application.Features.TicketCategories.GetTicketCategories;
 using TicketManagementSystem.Application.Features.TicketCategories.GetTicketCategoryById;
+using TicketManagementSystem.Application.Features.TicketCategories.UpdateTicketCategory;
 
 namespace TicketManagementSystem.WebAPI.Controllers;
 
@@ -67,5 +68,39 @@ public sealed class TicketCategoriesController : ControllerBase
             data = result
         });
 
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(
+        [FromRoute] Guid id, 
+        [FromBody] UpdateTicketCategoryCommand command, 
+        CancellationToken cancellationToken)
+    {
+        try 
+        {
+            var updateTicketCategoryCommand = new UpdateTicketCategoryCommand(id, command.Name, command.Description);
+            await _sender.Send(updateTicketCategoryCommand, cancellationToken);
+            return Ok(new
+            {
+                status = "success",
+                message = "Ticket category updated successfully."
+            });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new
+            {
+                status = "failed",
+                message = ex.Message
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new
+            {
+                status = "failed",
+                message = ex.Message
+            });
+        }
     }
 }

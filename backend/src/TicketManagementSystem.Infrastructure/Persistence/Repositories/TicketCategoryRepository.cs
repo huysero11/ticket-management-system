@@ -13,10 +13,10 @@ public sealed class TicketCategoryRepository : ITicketCategoryRepository
         _dbContext = dbContext;
     }
 
-    public async Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken)
+    public async Task<bool> ExistsByNameAsync(string name, Guid? excludeId, CancellationToken cancellationToken = default)
     {
         return await _dbContext.TicketCategories
-            .AnyAsync(tc => tc.Name == name, cancellationToken);
+            .AnyAsync(x => x.Name == name && x.Id != excludeId, cancellationToken);
     }
 
     public async Task AddAsync(TicketCategory ticketCategory, CancellationToken cancellationToken)
@@ -44,5 +44,11 @@ public sealed class TicketCategoryRepository : ITicketCategoryRepository
         return await _dbContext.TicketCategories
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public async Task UpdateAsync(TicketCategory category, CancellationToken cancellationToken)
+    {
+        _dbContext.TicketCategories.Update(category);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

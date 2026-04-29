@@ -4,12 +4,13 @@ namespace TicketManagementSystem.Application.Abstractions.Repositories;
 
 public interface ITicketCategoryRepository
 {
-    Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
+    Task<bool> ExistsByNameAsync(string name, Guid? excludeId, CancellationToken cancellationToken = default);
     Task AddAsync(TicketCategory ticketCategory, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<TicketCategory>> GetAllAsync(
         bool includeInactive,
         CancellationToken cancellationToken = default
     );
-    Task<TicketCategory?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<TicketCategory?> GetByIdAsync(Guid id,CancellationToken cancellationToken = default);
+    Task UpdateAsync(TicketCategory category, CancellationToken cancellationToken = default);
 }
