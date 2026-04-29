@@ -29,6 +29,7 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddScoped<ITicketCategoryRepository, TicketCategoryRepository>();
+        services.AddScoped<ITicketRepository, TicketRepository>();
 
         return services;
     }
