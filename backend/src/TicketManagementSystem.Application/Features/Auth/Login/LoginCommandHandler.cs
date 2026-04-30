@@ -40,7 +40,7 @@ public sealed class LoginCommandHandler : IRequestHandler<LoginCommand, LoginRes
             throw new UnauthorizedAccessException("Invalid email or password.");
         }
 
-        var accessToken = _jwtTokenService.GenerateAccessToken(user.Id, user.Email, user.FullName);
+        var accessToken = _jwtTokenService.GenerateAccessToken(user.Id, user.Email, user.FullName, user.Role.ToString());
         var refreshTokenResult = _jwtTokenService.GenerateRefreshToken();
 
         var refreshToken = new RefreshToken(
@@ -55,7 +55,7 @@ public sealed class LoginCommandHandler : IRequestHandler<LoginCommand, LoginRes
         return new LoginResponse(
             accessToken,
             refreshTokenResult.Token,
-            new LoginUserResponse(user.Id, user.Email, user.FullName)
+            new LoginUserResponse(user.Id, user.Email, user.FullName, user.Role.ToString())
         );
     }
 }

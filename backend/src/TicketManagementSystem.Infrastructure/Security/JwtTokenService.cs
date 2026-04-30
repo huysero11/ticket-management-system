@@ -18,13 +18,14 @@ public sealed class JwtTokenService : IJwtTokenService
         _jwtOptions = jwtOptions.Value;
     }
     
-    public string GenerateAccessToken(Guid userId, string email, string fullName)
+    public string GenerateAccessToken(Guid userId, string email, string fullName, string role)
     {
         var claims = new List<Claim>
         {
             new (ClaimTypes.NameIdentifier, userId.ToString()),
             new (ClaimTypes.Email, email),
             new (ClaimTypes.Name, fullName),
+            new (ClaimTypes.Role, role)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));

@@ -43,7 +43,8 @@ public sealed class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCom
         var newAccessToken = _jwtTokenService.GenerateAccessToken(
             existingRefreshToken.UserId,
             existingRefreshToken.User.Email,
-            existingRefreshToken.User.FullName
+            existingRefreshToken.User.FullName,
+            existingRefreshToken.User.Role.ToString()
         );
 
         var newRefreshTokenResult = _jwtTokenService.GenerateRefreshToken();

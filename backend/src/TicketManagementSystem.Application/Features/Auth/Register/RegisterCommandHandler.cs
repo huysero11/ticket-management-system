@@ -2,6 +2,7 @@ using MediatR;
 using TicketManagementSystem.Application.Abstractions.Security;
 using TicketManagementSystem.Domain.Entities;
 using TicketManagementSystem.Application.Abstractions.Repositories;
+using TicketManagementSystem.Domain.Common;
 
 namespace TicketManagementSystem.Application.Features.Auth.Register;
 
@@ -28,7 +29,7 @@ public sealed class RegisterCommandHandler : IRequestHandler<RegisterCommand, Re
         }
 
         var passwordHash = _passwordHasher.Hash(request.Password);
-        var user = new User(email, passwordHash, fullName);
+        var user = new User(email, passwordHash, fullName, UserRole.User);
 
         await _userRepository.AddAsync(user, cancellationToken);
 

@@ -10,5 +10,6 @@ public sealed record LoginResponse(
 public sealed record LoginUserResponse (
     Guid Id,
     string Email,
-    string FullName
+    string FullName,
+    string Role
 );
