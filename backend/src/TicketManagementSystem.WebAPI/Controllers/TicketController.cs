@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TicketManagementSystem.Application.Features.Tickets.CreateTicket;
 using TicketManagementSystem.Application.Features.Tickets.GetTicketById;
+using TicketManagementSystem.Application.Features.Tickets.GetTickets;
 
 namespace TicketManagementSystem.WebAPI.Controllers;
 
@@ -44,6 +45,20 @@ public sealed class TicketsController : ControllerBase
             status = "success",
             message = "Ticket retrieved successfully.",
             data = ticket
+        });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAll(
+        [FromQuery] GetTicketsQuery query,
+        CancellationToken cancellationToken)
+    {
+        var result = await _sender.Send(query, cancellationToken);
+
+        return Ok(new
+        {
+            status = "success",
+            data = result
         });
     }
 }
