@@ -8,6 +8,7 @@ public interface ITicketRepository
 {
     Task AddAsync(Ticket ticket, CancellationToken cancellationToken);
     Task<Ticket?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task UpdateAsync(Ticket ticket, CancellationToken cancellationToken);
     Task<(IReadOnlyList<Ticket>, int TotalCount)> GetPagedAsync(
         GetTicketsQuery query,
         Guid currentUserId,

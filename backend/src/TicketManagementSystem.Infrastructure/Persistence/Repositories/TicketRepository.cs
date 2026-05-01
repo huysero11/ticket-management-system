@@ -28,6 +28,12 @@ public sealed class TicketRepository : ITicketRepository
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
+    public async Task UpdateAsync(Ticket ticket, CancellationToken cancellationToken)
+    {
+        _dbContext.Tickets.Update(ticket);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task<(IReadOnlyList<Ticket>, int TotalCount)> GetPagedAsync(
         GetTicketsQuery query,
         Guid currentUserId,

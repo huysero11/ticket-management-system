@@ -38,7 +38,7 @@ public sealed class Ticket : AuditableEntity
         };
     }
 
-     public void Assign(Guid userId)
+    public void Assign(Guid userId)
     {
         AssignedToUserId = userId;
         SetUpdated();

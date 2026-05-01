@@ -1,9 +1,11 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TicketManagementSystem.Application.Features.Tickets.AssignTicket;
 using TicketManagementSystem.Application.Features.Tickets.CreateTicket;
 using TicketManagementSystem.Application.Features.Tickets.GetTicketById;
 using TicketManagementSystem.Application.Features.Tickets.GetTickets;
+using TicketManagementSystem.WebAPI.Contracts.Tickets;
 
 namespace TicketManagementSystem.WebAPI.Controllers;
 
@@ -61,6 +63,19 @@ public sealed class TicketsController : ControllerBase
         {
             status = "success",
             data = result
+        });
+    }
+
+    [HttpPatch("{id:guid}/assign")]
+    public async Task<IActionResult> Assign(Guid id, [FromBody] AssignTicketRequest request, CancellationToken cancellationToken)
+    {
+        var command = new AssignTicketCommand(id, request.AssignedToUserId);
+        await _sender.Send(command, cancellationToken);
+
+        return Ok(new
+        {
+            status = "success",
+            message = "Ticket assigned successfully."
         });
     }
 }
