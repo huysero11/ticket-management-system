@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TicketManagementSystem.Application.Abstractions.Repositories;
 using TicketManagementSystem.Application.Features.Tickets.GetTickets;
+using TicketManagementSystem.Domain.Common;
 using TicketManagementSystem.Domain.Entities;
 
 namespace TicketManagementSystem.Infrastructure.Persistence.Repositories;
@@ -29,12 +30,22 @@ public sealed class TicketRepository : ITicketRepository
 
     public async Task<(IReadOnlyList<Ticket>, int TotalCount)> GetPagedAsync(
         GetTicketsQuery query,
+        Guid currentUserId,
+        UserRole currentUserRole,
         CancellationToken cancellationToken)
     {
         IQueryable<Ticket> ticketsQuery = _dbContext.Tickets
             .AsNoTracking()
             .Include(x => x.Category);
         
+        ticketsQuery = currentUserRole switch
+        {
+            UserRole.Admin => ticketsQuery,
+            UserRole.Agent => ticketsQuery.Where(t => t.AssignedToUserId == currentUserId),
+            UserRole.User => ticketsQuery.Where(t => t.CreatedByUserId == currentUserId),
+            _ => ticketsQuery.Where(t => false)
+        };
+
         // Filters
         if (query.Status.HasValue)
         {
@@ -55,10 +66,14 @@ public sealed class TicketRepository : ITicketRepository
         var totalCount = await ticketsQuery.CountAsync(cancellationToken);
 
         // pagination
+        var pageNumber = query.PageNumber < 1 ? 1 : query.PageNumber;
+        var pageSize = query.PageSize < 1 ? 10 : query.PageSize;
+        pageSize = pageSize > 100 ? 100 : pageSize;
+
         var tickets = await ticketsQuery
-            .OrderByDescending(t => t.CreatedAtUtc)
-            .Skip((query.PageNumber - 1) * query.PageSize)
-            .Take(query.PageSize)
+            .OrderByDescending(x => x.CreatedAtUtc)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync(cancellationToken);
 
         return (tickets, totalCount);
