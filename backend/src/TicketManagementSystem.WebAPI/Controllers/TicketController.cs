@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TicketManagementSystem.Application.Features.Tickets.CreateTicket;
 using TicketManagementSystem.Application.Features.Tickets.GetTicketById;
@@ -8,6 +9,7 @@ namespace TicketManagementSystem.WebAPI.Controllers;
 
 [ApiController]
 [Route("api/tickets")]
+[Authorize]
 public sealed class TicketsController : ControllerBase
 {
     private readonly ISender _sender;

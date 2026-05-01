@@ -2,7 +2,9 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using TicketManagementSystem.Application;
+using TicketManagementSystem.Application.Abstractions.Security;
 using TicketManagementSystem.Infrastructure;
+using TicketManagementSystem.WebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddApplicationDI();
 builder.Services.AddInfrastructureDI(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"]!;
 var jwtIssuer = builder.Configuration["Jwt:Issuer"]!;

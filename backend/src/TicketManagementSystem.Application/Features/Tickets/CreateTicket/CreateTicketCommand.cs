@@ -7,6 +7,5 @@ public sealed record CreateTicketCommand(
     string Title,
     string Description,
     Guid CategoryId,
-    TicketPriority Priority,
-    Guid CreatedByUserId
+    TicketPriority Priority
 ) : IRequest<Guid>;
