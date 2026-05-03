@@ -54,11 +54,12 @@ public sealed class Ticket : AuditableEntity
         SetUpdated();
     }
 
-    public void Update(string title, string description, TicketPriority priority)
+    public void Update(string title, string description, TicketPriority priority, Guid categoryId)
     {
         Title = title;
         Description = description;
         Priority = priority;
+        CategoryId = categoryId;
         SetUpdated();
     }
 }

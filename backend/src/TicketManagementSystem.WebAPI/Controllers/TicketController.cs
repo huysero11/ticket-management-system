@@ -5,6 +5,7 @@ using TicketManagementSystem.Application.Features.Tickets.AssignTicket;
 using TicketManagementSystem.Application.Features.Tickets.CreateTicket;
 using TicketManagementSystem.Application.Features.Tickets.GetTicketById;
 using TicketManagementSystem.Application.Features.Tickets.GetTickets;
+using TicketManagementSystem.Application.Features.Tickets.UpdateTicket;
 using TicketManagementSystem.WebAPI.Contracts.Tickets;
 
 namespace TicketManagementSystem.WebAPI.Controllers;
@@ -76,6 +77,19 @@ public sealed class TicketsController : ControllerBase
         {
             status = "success",
             message = "Ticket assigned successfully."
+        });
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTicketRequest request, CancellationToken cancellationToken)
+    {
+        var command = new UpdateTicketCommand(id, request.Title, request.Description, request.Priority, request.CategoryId);
+        await _sender.Send(command, cancellationToken);
+
+        return Ok(new
+        {
+            status = "success",
+            message = "Ticket updated successfully."
         });
     }
 }
