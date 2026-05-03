@@ -46,10 +46,22 @@ public sealed class Ticket : AuditableEntity
 
     public void ChangeStatus(TicketStatus status)
     {
+        if (Status == TicketStatus.Closed)
+        {
+            throw new InvalidOperationException("Closed ticket cannot be changed.");
+        }
+
+        if (Status == status)
+        {
+            return;
+        }
+
         Status = status;
 
         if (status == TicketStatus.Closed)
+        {
             ClosedAtUtc = DateTime.UtcNow;
+        }
 
         SetUpdated();
     }

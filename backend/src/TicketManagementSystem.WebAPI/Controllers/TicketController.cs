@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TicketManagementSystem.Application.Features.Tickets.AssignTicket;
+using TicketManagementSystem.Application.Features.Tickets.ChangeTicketStatus;
 using TicketManagementSystem.Application.Features.Tickets.CreateTicket;
 using TicketManagementSystem.Application.Features.Tickets.GetTicketById;
 using TicketManagementSystem.Application.Features.Tickets.GetTickets;
@@ -90,6 +91,19 @@ public sealed class TicketsController : ControllerBase
         {
             status = "success",
             message = "Ticket updated successfully."
+        });
+    }
+
+    [HttpPatch("{id:guid}/status")]
+    public async Task<IActionResult> ChangeStatus(Guid id, [FromBody] ChangeTicketStatusRequest request, CancellationToken cancellationToken)
+    {
+        var command = new ChangeTicketStatusCommand(id, request.Status);
+        await _sender.Send(command, cancellationToken);
+
+        return Ok(new
+        {
+            status = "success",
+            message = "Ticket status changed successfully."
         });
     }
 }
