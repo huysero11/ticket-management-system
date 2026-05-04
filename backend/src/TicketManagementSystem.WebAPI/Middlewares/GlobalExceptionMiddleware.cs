@@ -1,5 +1,4 @@
-using System.Net;
-using System.Text.Json;
+using FluentValidation;
 
 public sealed class GlobalExceptionMiddleware 
 {
@@ -27,14 +26,40 @@ public sealed class GlobalExceptionMiddleware
 
     private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
+        context.Response.ContentType = "application/json";
+
+        if (exception is ValidationException validationException)
+        {
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var errors = validationException.Errors
+                .GroupBy(error => error.PropertyName)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Select(error => error.ErrorMessage).ToArray()
+                );
+
+            var validationResponse = new
+            {
+                status = "failed",
+                message = "Validation failed.",
+                errors
+            };
+
+            await context.Response.WriteAsJsonAsync(validationResponse);
+            return;
+        }
+
         var statusCode = exception switch
         {
-            KeyNotFoundException => HttpStatusCode.NotFound,
-            UnauthorizedAccessException => HttpStatusCode.Unauthorized,
-            InvalidOperationException => HttpStatusCode.BadRequest,
-            ArgumentException => HttpStatusCode.BadRequest,
-            _ => HttpStatusCode.InternalServerError
+            KeyNotFoundException => StatusCodes.Status404NotFound,
+            UnauthorizedAccessException => StatusCodes.Status403Forbidden,
+            InvalidOperationException => StatusCodes.Status400BadRequest,
+            ArgumentException => StatusCodes.Status400BadRequest,
+            _ => StatusCodes.Status500InternalServerError
         };
+
+        context.Response.StatusCode = statusCode;
 
         var response = new
         {
@@ -42,10 +67,6 @@ public sealed class GlobalExceptionMiddleware
             message = exception.Message
         };
 
-        context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)statusCode;
-
-        var json = JsonSerializer.Serialize(response);
-        await context.Response.WriteAsync(json);
+        await context.Response.WriteAsJsonAsync(response);
     }
 }
