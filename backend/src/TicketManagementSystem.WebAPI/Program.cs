@@ -44,6 +44,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseMiddleware<GlobalExceptionMiddleware>();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
