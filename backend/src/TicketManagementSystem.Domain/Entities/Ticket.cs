@@ -4,11 +4,11 @@ namespace TicketManagementSystem.Domain.Entities;
 
 public sealed class Ticket : AuditableEntity
 {
-    public string Title {get; private set;} = null;
-    public string Description {get; private set;} = null;
+    public string Title {get; private set;} = null!;
+    public string Description {get; private set;} = null!;
 
     public Guid CategoryId {get; private set;}
-    public TicketCategory Category {get; private set;} = null;
+    public TicketCategory Category {get; private set;} = null!;
 
     public TicketStatus Status {get; private set;}
     public TicketPriority Priority {get; private set;} 
@@ -44,28 +44,51 @@ public sealed class Ticket : AuditableEntity
         SetUpdated();
     }
 
-    public void ChangeStatus(TicketStatus status)
+    public void ChangeStatus(TicketStatus newStatus)
     {
-        if (Status == TicketStatus.Closed)
-        {
-            throw new InvalidOperationException("Closed ticket cannot be changed.");
-        }
-
-        if (Status == status)
+        if (newStatus == Status)
         {
             return;
         }
 
-        Status = status;
+        EnsureCanChangeStatusTo(newStatus);
 
-        if (status == TicketStatus.Closed)
+        Status = newStatus;
+        SetUpdated();
+
+        if (newStatus == TicketStatus.Closed)
         {
             ClosedAtUtc = DateTime.UtcNow;
         }
-
-        SetUpdated();
     }
 
+    private void EnsureCanChangeStatusTo(TicketStatus newStatus)
+    {
+        if (Status == TicketStatus.Closed)
+        {
+            throw new InvalidOperationException("Closed ticket cannot change status.");
+        }
+
+        var isValidTransition = Status switch
+        {
+            TicketStatus.Open =>
+                newStatus == TicketStatus.InProgress,
+
+            TicketStatus.InProgress =>
+                newStatus == TicketStatus.Resolved,
+
+            TicketStatus.Resolved =>
+                newStatus is TicketStatus.Closed or TicketStatus.InProgress,
+
+            _ => false
+        };
+
+        if (!isValidTransition)
+        {
+            throw new InvalidOperationException(
+                $"Cannot change ticket status from {Status} to {newStatus}.");
+        }
+    }
     public void Update(string title, string description, TicketPriority priority, Guid categoryId)
     {
         Title = title;

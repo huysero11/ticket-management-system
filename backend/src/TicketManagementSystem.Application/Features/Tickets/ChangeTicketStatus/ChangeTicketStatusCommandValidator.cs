@@ -1,4 +1,5 @@
 using FluentValidation;
+using TicketManagementSystem.Domain.Common;
 
 namespace TicketManagementSystem.Application.Features.Tickets.ChangeTicketStatus;
 
@@ -11,6 +12,8 @@ public sealed class ChangeTicketStatusCommandValidator
             .NotEmpty();
 
         RuleFor(x => x.Status)
-            .IsInEnum();
+            .IsInEnum()
+            .Must(status => status != TicketStatus.Open)
+            .WithMessage("Cannot manually change ticket status back to Open.");
     }
 }
