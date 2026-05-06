@@ -1,12 +1,15 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TicketManagementSystem.Application.Features.TicketComments.AddTicketComment;
+using TicketManagementSystem.Application.Features.TicketComments.GetTicketComments;
 using TicketManagementSystem.Application.Features.Tickets.AssignTicket;
 using TicketManagementSystem.Application.Features.Tickets.ChangeTicketStatus;
 using TicketManagementSystem.Application.Features.Tickets.CreateTicket;
 using TicketManagementSystem.Application.Features.Tickets.GetTicketById;
 using TicketManagementSystem.Application.Features.Tickets.GetTickets;
 using TicketManagementSystem.Application.Features.Tickets.UpdateTicket;
+using TicketManagementSystem.WebAPI.Contracts.TicketComments;
 using TicketManagementSystem.WebAPI.Contracts.Tickets;
 
 namespace TicketManagementSystem.WebAPI.Controllers;
@@ -106,4 +109,43 @@ public sealed class TicketsController : ControllerBase
             message = "Ticket status changed successfully."
         });
     }
+
+    [HttpPost("{ticketId:guid}/comments")]
+    public async Task<IActionResult> AddComment(
+        Guid ticketId,
+        [FromBody] AddTicketCommentRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new AddTicketCommentCommand(
+            ticketId,
+            request.Message);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        return Ok(new
+        {
+            status = "success",
+            message = "Comment added successfully.",
+            data = result
+        });
+    }
+
+    [HttpGet("{ticketId:guid}/comments")]
+    public async Task<IActionResult> GetComments(
+        Guid ticketId,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetTicketCommentsQuery(ticketId);
+
+        var result = await _sender.Send(query, cancellationToken);
+
+        return Ok(new
+        {
+            status = "success",
+            message = "Ticket comments retrieved successfully.",
+            data = result
+        });
+    }
+
+
 }

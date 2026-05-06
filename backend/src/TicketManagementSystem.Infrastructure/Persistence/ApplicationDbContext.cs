@@ -13,6 +13,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<TicketCategory> TicketCategories => Set<TicketCategory>();
     public DbSet<Ticket> Tickets => Set<Ticket>();
+    public DbSet<TicketComment> TicketComments => Set<TicketComment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
