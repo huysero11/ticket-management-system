@@ -8,7 +8,16 @@ public interface ITicketCommentRepository
         TicketComment comment,
         CancellationToken cancellationToken);
 
+    Task<TicketComment?> GetByIdAndTicketIdAsync(
+        Guid commentId,
+        Guid ticketId,
+        CancellationToken cancellationToken);
+
     Task<List<TicketComment>> GetByTicketIdAsync(
         Guid ticketId,
+        CancellationToken cancellationToken);
+
+    Task UpdateAsync(
+        TicketComment comment,
         CancellationToken cancellationToken);
 }

@@ -2,7 +2,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TicketManagementSystem.Application.Features.TicketComments.AddTicketComment;
+using TicketManagementSystem.Application.Features.TicketComments.DeleteTicketComment;
 using TicketManagementSystem.Application.Features.TicketComments.GetTicketComments;
+using TicketManagementSystem.Application.Features.TicketComments.UpdateTicketComment;
 using TicketManagementSystem.Application.Features.Tickets.AssignTicket;
 using TicketManagementSystem.Application.Features.Tickets.ChangeTicketStatus;
 using TicketManagementSystem.Application.Features.Tickets.CreateTicket;
@@ -147,5 +149,45 @@ public sealed class TicketsController : ControllerBase
         });
     }
 
+    [HttpPut("{ticketId:guid}/comments/{commentId:guid}")]
+    public async Task<IActionResult> UpdateComment(
+        Guid ticketId,
+        Guid commentId,
+        [FromBody] UpdateTicketCommentRequest request,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateTicketCommentCommand(
+            ticketId,
+            commentId,
+            request.Message);
+
+        var result = await _sender.Send(command, cancellationToken);
+
+        return Ok(new
+        {
+            status = "success",
+            message = "Comment updated successfully.",
+            data = result
+        });
+    }
+
+    [HttpDelete("{ticketId:guid}/comments/{commentId:guid}")]
+    public async Task<IActionResult> DeleteComment(
+        Guid ticketId,
+        Guid commentId,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteTicketCommentCommand(
+            ticketId,
+            commentId);
+
+        await _sender.Send(command, cancellationToken);
+
+        return Ok(new
+        {
+            status = "success",
+            message = "Comment deleted successfully."
+        });
+    }
 
 }

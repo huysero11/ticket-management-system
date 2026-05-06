@@ -16,6 +16,14 @@ public sealed class TicketCommentConfiguration : IEntityTypeConfiguration<Ticket
             .IsRequired()
             .HasMaxLength(2000);
 
+        builder.Property(tc => tc.IsDeleted)
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.Property(tc => tc.DeletedAtUtc);
+
+        builder.Property(tc => tc.DeletedByUserId);
+
         builder.Property(tc => tc.CreatedAtUtc)
             .IsRequired();
 
@@ -38,5 +46,7 @@ public sealed class TicketCommentConfiguration : IEntityTypeConfiguration<Ticket
             tc.TicketId,
             tc.CreatedAtUtc
         });
+
+        builder.HasIndex(tc => tc.IsDeleted);
     }
 }
