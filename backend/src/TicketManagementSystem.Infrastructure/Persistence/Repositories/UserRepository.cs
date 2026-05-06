@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TicketManagementSystem.Domain.Entities;
 using TicketManagementSystem.Application.Abstractions.Repositories;
+using TicketManagementSystem.Domain.Common;
 
 namespace TicketManagementSystem.Infrastructure.Persistence.Repositories;
 
@@ -32,5 +33,19 @@ public sealed class UserRepository : IUserRepository
     public Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
+    }
+
+    public Task<List<User>> GetUsersAsync(UserRole? role, CancellationToken cancellationToken)
+    {
+        var query = _dbContext.Users.AsNoTracking().AsQueryable();
+
+        if (role.HasValue)
+        {
+            query = query.Where(u => u.Role == role.Value);
+        }
+
+        return query
+            .OrderBy(user => user.FullName)
+            .ToListAsync(cancellationToken);
     }
 }
