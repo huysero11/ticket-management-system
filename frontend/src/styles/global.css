@@ -1,0 +1,172 @@
+:root {
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  --color-react-blue: #087ea4;
+  --color-react-blue-hover: #149eca;
+  --color-react-blue-light: #61dafb;
+
+  --color-react-purple: #7c3aed;
+  --color-react-purple-hover: #8b5cf6;
+  --color-react-purple-light: #ede9fe;
+
+  --color-primary: var(--color-react-blue);
+  --color-primary-hover: var(--color-react-blue-hover);
+  --color-accent: var(--color-react-purple);
+  --color-accent-hover: var(--color-react-purple-hover);
+
+  --color-success: #52c41a;
+  --color-warning: #faad14;
+  --color-error: #ff4d4f;
+  --color-info: var(--color-react-blue);
+
+  --color-bg-layout: #f5f7fb;
+  --color-bg-container: #ffffff;
+
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #6b7280;
+  --color-text-muted: #9ca3af;
+
+  --color-border: #e5e7eb;
+
+  --color-sider-bg: #111827;
+
+  --font-family-main:
+    Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --font-size-title-large: 32px;
+  --font-size-title-medium: 24px;
+  --font-size-title-small: 20px;
+
+  --font-size-body-large: 16px;
+  --font-size-body-medium: 14px;
+  --font-size-body-small: 12px;
+
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+.app-logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+}
+
+.app-logo span {
+  color: var(--color-react-blue-light);
+}
+
+.auth-title {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+  background: linear-gradient(
+    90deg,
+    var(--color-react-blue),
+    var(--color-react-purple)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.accent-text {
+  color: var(--color-accent);
+}
+
+.primary-text {
+  color: var(--color-primary);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-family-main);
+  background-color: var(--color-bg-layout);
+  color: var(--color-text-primary);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-accent);
+}
+
+.page-container {
+  padding: var(--spacing-lg);
+}
+
+.full-page-center {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-layout);
+  padding: var(--spacing-lg);
+}
+
+.auth-card {
+  width: 420px;
+  max-width: 100%;
+}
+
+.auth-error {
+  display: block;
+  margin-bottom: var(--spacing-md);
+}
+
+.auth-bottom-text {
+  margin-top: var(--spacing-md);
+  text-align: center;
+}
+
+.app-header {
+  background: var(--color-bg-container);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-content {
+  padding: var(--spacing-lg);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
