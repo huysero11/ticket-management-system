@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TicketManagementSystem.Application.Features.TicketCategories.CreateTicketCategory;
 using TicketManagementSystem.Application.Features.TicketCategories.DeleteTicketCategory;
@@ -10,6 +11,7 @@ namespace TicketManagementSystem.WebAPI.Controllers;
 
 [ApiController]
 [Route("api/ticket-categories")]
+[Authorize]
 public sealed class TicketCategoriesController : ControllerBase
 {
     private readonly ISender _sender;
@@ -20,6 +22,7 @@ public sealed class TicketCategoriesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] CreateTicketCategoryCommand command, CancellationToken cancellationToken)
     {
         try
@@ -72,6 +75,7 @@ public sealed class TicketCategoriesController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Update(
         [FromRoute] Guid id, 
         [FromBody] UpdateTicketCategoryCommand command, 
@@ -106,6 +110,7 @@ public sealed class TicketCategoriesController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken cancellationToken)
     {
         try
