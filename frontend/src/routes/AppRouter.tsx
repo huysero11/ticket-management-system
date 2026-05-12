@@ -5,8 +5,10 @@ import AuthLayout from "../layouts/AuthLayout";
 import MainLayout from "../layouts/MainLayout";
 import DashboardPage from "../pages/DashboardPage";
 import NotFoundPage from "../pages/NotFoundPage";
+import TicketCategoriesPage from "../pages/ticketCategories/TicketCategoriesPage";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
+import RoleRoute from "./RoleRoute";
 
 function AppRouter() {
   return (
@@ -24,6 +26,13 @@ function AppRouter() {
         <Route path="/app" element={<MainLayout />}>
           <Route index element={<Navigate to="/app/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
+
+          <Route element={<RoleRoute allowedRoles={["Admin"]} />}>
+            <Route
+              path="ticket-categories"
+              element={<TicketCategoriesPage />}
+            />
+          </Route>
         </Route>
       </Route>
 
