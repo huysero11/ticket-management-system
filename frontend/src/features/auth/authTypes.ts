@@ -26,6 +26,13 @@ export interface AuthResponse {
   user: AuthUser;
 }
 
+export interface RegisterResponse {
+  id: string;
+  email: string;
+  fullName: string;
+  role?: UserRole;
+}
+
 export interface AuthState {
   user: AuthUser | null;
   accessToken: string | null;

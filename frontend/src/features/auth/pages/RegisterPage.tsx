@@ -1,4 +1,4 @@
-import { Button, Card, Form, Input, Typography, message } from "antd";
+import { App as AntdApp, Button, Card, Form, Input, Typography } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import { selectAuthErrorMessage, selectAuthLoading } from "../authSelectors";
@@ -8,6 +8,7 @@ import type { RegisterRequest } from "../authTypes";
 function RegisterPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { message } = AntdApp.useApp();
 
   const isLoading = useAppSelector(selectAuthLoading);
   const errorMessage = useAppSelector(selectAuthErrorMessage);
@@ -16,12 +17,14 @@ function RegisterPage() {
     const result = await dispatch(registerThunk(values));
 
     if (registerThunk.fulfilled.match(result)) {
-      message.success("Register successfully.");
-      navigate("/app/dashboard", { replace: true });
+      message.success("Register successfully. Please login.");
+      navigate("/login", { replace: true });
       return;
     }
 
-    message.error(result.payload?.message || "Register failed.");
+    if (registerThunk.rejected.match(result)) {
+      message.error(result.payload?.message ?? "Register failed.");
+    }
   };
 
   return (

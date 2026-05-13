@@ -8,6 +8,7 @@ import type {
   AuthState,
   LoginRequest,
   RegisterRequest,
+  RegisterResponse,
 } from "./authTypes";
 
 const initialUser = tokenStorage.getUser();
@@ -37,7 +38,7 @@ export const loginThunk = createAsyncThunk<
 });
 
 export const registerThunk = createAsyncThunk<
-  AuthResponse,
+  RegisterResponse,
   RegisterRequest,
   { rejectValue: AppError }
 >("auth/register", async (payload, { rejectWithValue }) => {
@@ -108,7 +109,7 @@ const authSlice = createSlice({
       })
       .addCase(loginThunk.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload || {
+        state.error = action.payload ?? {
           message: "Failed to login.",
         };
       })
@@ -118,21 +119,17 @@ const authSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(registerThunk.fulfilled, (state, action) => {
-        const { accessToken, refreshToken, user } = action.payload;
-
-        state.user = user;
-        state.accessToken = accessToken;
-        state.refreshToken = refreshToken;
-        state.isAuthenticated = true;
+      .addCase(registerThunk.fulfilled, (state) => {
         state.isLoading = false;
         state.error = null;
 
-        tokenStorage.saveAuthData(accessToken, refreshToken, user);
+        // Option 1:
+        // Register only creates account.
+        // It does not login user because backend does not return tokens.
       })
       .addCase(registerThunk.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload || {
+        state.error = action.payload ?? {
           message: "Failed to register.",
         };
       })
@@ -155,7 +152,7 @@ const authSlice = createSlice({
         state.refreshToken = null;
         state.isAuthenticated = false;
         state.isLoading = false;
-        state.error = action.payload || {
+        state.error = action.payload ?? {
           message: "Failed to logout.",
         };
       });

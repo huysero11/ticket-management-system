@@ -1,9 +1,13 @@
 import axiosClient from "../../services/axiosClient";
 import type { ApiResponse } from "../../types/common";
-import type { AuthResponse, LoginRequest, RegisterRequest } from "./authTypes";
+import type {
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+  RegisterResponse,
+} from "./authTypes";
 
-const BACKEND_URL = import.meta.env.BACKEND_URL || "http://localhost:5049/api";
-const AUTH_URL = `${BACKEND_URL}/auth`;
+const AUTH_URL = "/auth";
 
 export const authApi = {
   login(payload: LoginRequest): Promise<ApiResponse<AuthResponse>> {
@@ -13,20 +17,25 @@ export const authApi = {
       LoginRequest
     >(`${AUTH_URL}/login`, payload);
   },
-  register(payload: RegisterRequest): Promise<ApiResponse<AuthResponse>> {
+
+  register(payload: RegisterRequest): Promise<ApiResponse<RegisterResponse>> {
     return axiosClient.post<
-      ApiResponse<AuthResponse>,
-      ApiResponse<AuthResponse>,
+      ApiResponse<RegisterResponse>,
+      ApiResponse<RegisterResponse>,
       RegisterRequest
     >(`${AUTH_URL}/register`, payload);
   },
+
   logout(refreshToken: string): Promise<ApiResponse<null>> {
     return axiosClient.post<
       ApiResponse<null>,
       ApiResponse<null>,
       { refreshToken: string }
-    >(`${AUTH_URL}/logout`, { refreshToken });
+    >(`${AUTH_URL}/logout`, {
+      refreshToken,
+    });
   },
+
   refreshToken(refreshToken: string): Promise<ApiResponse<AuthResponse>> {
     return axiosClient.post<
       ApiResponse<AuthResponse>,
