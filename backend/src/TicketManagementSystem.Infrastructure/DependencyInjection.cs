@@ -8,6 +8,8 @@ using TicketManagementSystem.Infrastructure.Persistence.Repositories;
 using TicketManagementSystem.Infrastructure.Security;
 using TicketManagementSystem.Application.Abstractions.Repositories;
 using TicketManagementSystem.Application.Abstractions.Security;
+using TicketManagementSystem.Application.Abstractions.Dashboard;
+using TicketManagementSystem.Infrastructure.Dashboard;
 
 namespace TicketManagementSystem.Infrastructure;
 
@@ -31,6 +33,8 @@ public static class DependencyInjection
         services.AddScoped<ITicketCategoryRepository, TicketCategoryRepository>();
         services.AddScoped<ITicketRepository, TicketRepository>();
         services.AddScoped<ITicketCommentRepository, TicketCommentRepository>();
+
+        services.AddScoped<IDashboardQueryService, DashboardQueryService>();
 
         return services;
     }
