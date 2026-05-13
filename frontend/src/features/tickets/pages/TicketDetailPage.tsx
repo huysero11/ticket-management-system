@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   Button,
   Card,
   Descriptions,
@@ -43,6 +44,13 @@ import {
   type AgentOption,
   type TicketCategoryOption,
 } from "../ticketOptionsApi";
+import {
+  canAssignTicket,
+  canChangeTicketStatus,
+  canEditTicket,
+  canTicketStatusBeChanged,
+  getNextTicketStatuses,
+} from "../ticketPermissions";
 
 const { Title, Paragraph } = Typography;
 
@@ -54,7 +62,7 @@ export default function TicketDetailPage() {
   const ticketId = params.id;
 
   const currentUser = useAppSelector(selectCurrentUser);
-  const isAdmin = currentUser?.role === "Admin";
+  const currentRole = currentUser?.role;
 
   const ticket = useAppSelector(selectSelectedTicket);
   const isDetailLoading = useAppSelector(selectTicketDetailLoading);
@@ -70,6 +78,24 @@ export default function TicketDetailPage() {
     TicketStatus | undefined
   >();
   const [selectedAgentId, setSelectedAgentId] = useState<string | undefined>();
+
+  const canAssign = canAssignTicket(currentRole);
+  const canEdit = canEditTicket(currentRole);
+  const canChangeStatus = canChangeTicketStatus(currentRole);
+
+  const nextStatusOptions = useMemo(() => {
+    if (!ticket) {
+      return [];
+    }
+
+    return getNextTicketStatuses(ticket.status).map((status) => ({
+      value: status,
+      label: ticketStatusLabels[status],
+    }));
+  }, [ticket]);
+
+  const canShowStatusAction =
+    ticket !== null && canTicketStatusBeChanged(ticket.status, currentRole);
 
   useEffect(() => {
     if (!ticketId) {
@@ -88,7 +114,7 @@ export default function TicketDetailPage() {
         message.error("Failed to load categories.");
       }
 
-      if (!isAdmin) {
+      if (!canAssign) {
         return;
       }
 
@@ -102,7 +128,7 @@ export default function TicketDetailPage() {
     };
 
     loadOptions();
-  }, [isAdmin]);
+  }, [canAssign]);
 
   useEffect(() => {
     if (!ticket || !isEditing) {
@@ -181,14 +207,17 @@ export default function TicketDetailPage() {
       return;
     }
 
-    const status = selectedStatus ?? ticket.status;
+    if (!selectedStatus) {
+      message.warning("Please select next status.");
+      return;
+    }
 
     try {
       await dispatch(
         changeTicketStatusThunk({
           id: ticketId,
           payload: {
-            status,
+            status: selectedStatus,
           },
         }),
       ).unwrap();
@@ -221,7 +250,7 @@ export default function TicketDetailPage() {
   }
 
   return (
-    <Space orientation="vertical" size="large" style={{ width: "100%" }}>
+    <Space direction="vertical" size="large" style={{ width: "100%" }}>
       <Space
         align="center"
         style={{
@@ -242,10 +271,21 @@ export default function TicketDetailPage() {
           </Title>
         </Space>
 
-        <Button onClick={() => setIsEditing((value) => !value)}>
-          {isEditing ? "Cancel Edit" : "Edit Ticket"}
-        </Button>
+        {canEdit && (
+          <Button onClick={() => setIsEditing((value) => !value)}>
+            {isEditing ? "Cancel Edit" : "Edit Ticket"}
+          </Button>
+        )}
       </Space>
+
+      {ticket.status === TicketStatus.Closed && (
+        <Alert
+          type="info"
+          showIcon
+          message="This ticket is closed."
+          description="Closed tickets cannot be changed to another status."
+        />
+      )}
 
       <Card>
         <Descriptions bordered column={2}>
@@ -297,57 +337,72 @@ export default function TicketDetailPage() {
         </Descriptions>
       </Card>
 
-      <Card title="Actions">
-        <Space orientation="vertical" size="middle" style={{ width: "100%" }}>
-          {isAdmin && (
-            <Space wrap>
-              <Select
-                placeholder="Assign to agent"
-                style={{ width: 280 }}
-                value={selectedAgentId ?? ticket.assignedToUserId ?? undefined}
-                onChange={setSelectedAgentId}
-                options={agents.map((agent) => ({
-                  value: agent.id,
-                  label: `${agent.fullName} (${agent.email})`,
-                }))}
-              />
+      {(canAssign || canChangeStatus) && (
+        <Card title="Actions">
+          <Space direction="vertical" size="middle" style={{ width: "100%" }}>
+            {canAssign && (
+              <Space wrap>
+                <Select
+                  placeholder="Assign to agent"
+                  style={{ width: 280 }}
+                  value={
+                    selectedAgentId ?? ticket.assignedToUserId ?? undefined
+                  }
+                  onChange={setSelectedAgentId}
+                  options={agents.map((agent) => ({
+                    value: agent.id,
+                    label: `${agent.fullName} (${agent.email})`,
+                  }))}
+                />
 
-              <Button
-                type="primary"
-                loading={isSubmitting}
-                onClick={handleAssignTicket}
-              >
-                Assign
-              </Button>
-            </Space>
-          )}
+                <Button
+                  type="primary"
+                  loading={isSubmitting}
+                  onClick={handleAssignTicket}
+                >
+                  Assign
+                </Button>
+              </Space>
+            )}
 
-          <Space wrap>
-            <Select
-              placeholder="Change status"
-              style={{ width: 220 }}
-              value={selectedStatus ?? ticket.status}
-              onChange={setSelectedStatus}
-              options={Object.values(TicketStatus)
-                .filter((value) => typeof value === "number")
-                .map((value) => ({
-                  value,
-                  label: ticketStatusLabels[value as TicketStatus],
-                }))}
-            />
+            {canChangeStatus && (
+              <>
+                {canShowStatusAction ? (
+                  <Space wrap>
+                    <Select
+                      placeholder="Select next status"
+                      style={{ width: 220 }}
+                      value={selectedStatus}
+                      onChange={setSelectedStatus}
+                      options={nextStatusOptions}
+                    />
 
-            <Button
-              type="primary"
-              loading={isSubmitting}
-              onClick={handleChangeStatus}
-            >
-              Change Status
-            </Button>
+                    <Button
+                      type="primary"
+                      loading={isSubmitting}
+                      onClick={handleChangeStatus}
+                    >
+                      Change Status
+                    </Button>
+                  </Space>
+                ) : (
+                  <Alert
+                    type="warning"
+                    showIcon
+                    message={
+                      ticket.status === TicketStatus.Closed
+                        ? "No status actions available."
+                        : "No valid next status available."
+                    }
+                  />
+                )}
+              </>
+            )}
           </Space>
-        </Space>
-      </Card>
+        </Card>
+      )}
 
-      {isEditing && (
+      {isEditing && canEdit && (
         <Card title="Edit Ticket">
           <Form
             form={form}
