@@ -1,7 +1,7 @@
+import { useMemo } from "react";
 import { Button, Layout, Menu, Typography } from "antd";
 import type { MenuProps } from "antd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { selectCurrentUser } from "../features/auth/authSelectors";
 import { logoutThunk } from "../features/auth/authSlice";
@@ -22,12 +22,29 @@ function MainLayout() {
     navigate("/login", { replace: true });
   };
 
+  const selectedMenuKey = useMemo(() => {
+    if (location.pathname.startsWith("/app/tickets")) {
+      return "/app/tickets";
+    }
+
+    if (location.pathname.startsWith("/app/ticket-categories")) {
+      return "/app/ticket-categories";
+    }
+
+    return location.pathname;
+  }, [location.pathname]);
+
   const menuItems: MenuProps["items"] = useMemo(
     () => [
       {
         key: "/app/dashboard",
         label: "Dashboard",
         onClick: () => navigate("/app/dashboard"),
+      },
+      {
+        key: "/app/tickets",
+        label: "Tickets",
+        onClick: () => navigate("/app/tickets"),
       },
       ...(isAdmin
         ? [
@@ -61,7 +78,7 @@ function MainLayout() {
         <Menu
           theme="dark"
           mode="inline"
-          selectedKeys={[location.pathname]}
+          selectedKeys={[selectedMenuKey]}
           items={menuItems}
         />
       </Sider>

@@ -15,6 +15,10 @@ function isValidationErrors(value: unknown): value is Record<string, string[]> {
 }
 
 export function isAppError(error: unknown): error is AppError {
+  if (error instanceof Error) {
+    return false;
+  }
+
   if (typeof error !== "object" || error === null) {
     return false;
   }

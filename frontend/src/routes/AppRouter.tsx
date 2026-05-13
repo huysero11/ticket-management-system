@@ -1,6 +1,9 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import LoginPage from "../features/auth/pages/LoginPage";
 import RegisterPage from "../features/auth/pages/RegisterPage";
+import TicketCreatePage from "../features/tickets/pages/TicketCreatePage";
+import TicketDetailPage from "../features/tickets/pages/TicketDetailPage";
+import TicketListPage from "../features/tickets/pages/TicketListPage";
 import AuthLayout from "../layouts/AuthLayout";
 import MainLayout from "../layouts/MainLayout";
 import DashboardPage from "../pages/DashboardPage";
@@ -26,6 +29,10 @@ function AppRouter() {
         <Route path="/app" element={<MainLayout />}>
           <Route index element={<Navigate to="/app/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
+
+          <Route path="tickets" element={<TicketListPage />} />
+          <Route path="tickets/create" element={<TicketCreatePage />} />
+          <Route path="tickets/:id" element={<TicketDetailPage />} />
 
           <Route element={<RoleRoute allowedRoles={["Admin"]} />}>
             <Route
