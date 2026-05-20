@@ -3,21 +3,44 @@ using TicketManagementSystem.Application.Abstractions.Repositories;
 
 namespace TicketManagementSystem.Application.Features.Tickets.GetTicketById;
 
-public sealed class GetTicketByIdQueryHandler : IRequestHandler<GetTicketByIdQuery, TicketDto>
+public sealed class GetTicketByIdQueryHandler
+    : IRequestHandler<GetTicketByIdQuery, TicketDto>
 {
-    private readonly ITicketRepository _repository;
+    private readonly ITicketRepository _ticketRepository;
+    private readonly IUserRepository _userRepository;
 
-    public GetTicketByIdQueryHandler(ITicketRepository repository)
+    public GetTicketByIdQueryHandler(
+        ITicketRepository ticketRepository,
+        IUserRepository userRepository)
     {
-        _repository = repository;
+        _ticketRepository = ticketRepository;
+        _userRepository = userRepository;
     }
 
-    public async Task<TicketDto> Handle(GetTicketByIdQuery request, CancellationToken cancellationToken)
+    public async Task<TicketDto> Handle(
+        GetTicketByIdQuery request,
+        CancellationToken cancellationToken)
     {
-        var ticket = await _repository.GetByIdAsync(request.Id, cancellationToken);
+        var ticket = await _ticketRepository.GetByIdAsync(
+            request.Id,
+            cancellationToken);
+
         if (ticket is null)
         {
-            throw new Exception("Ticket not found");
+            throw new KeyNotFoundException("Ticket not found.");
+        }
+
+        string? assignedToUserName = null;
+
+        if (ticket.AssignedToUserId.HasValue)
+        {
+            var assignedUsers = await _userRepository.GetByIdsAsync(
+                new[] { ticket.AssignedToUserId.Value },
+                cancellationToken);
+
+            assignedToUserName = assignedUsers
+                .FirstOrDefault()
+                ?.FullName;
         }
 
         return new TicketDto(
@@ -29,8 +52,8 @@ public sealed class GetTicketByIdQueryHandler : IRequestHandler<GetTicketByIdQue
             ticket.Priority,
             ticket.CreatedByUserId,
             ticket.AssignedToUserId,
+            assignedToUserName,
             ticket.CreatedAtUtc,
-            ticket.UpdatedAtUtc
-        );
+            ticket.UpdatedAtUtc);
     }
 }
