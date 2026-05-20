@@ -10,5 +10,6 @@ public sealed record DashboardRecentTicketDto(
     TicketPriority Priority,
     Guid CreatedByUserId,
     Guid? AssignedToUserId,
+    string? AssignedToUserName,
     DateTime CreatedAtUtc
 );
