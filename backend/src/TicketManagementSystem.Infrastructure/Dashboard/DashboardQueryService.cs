@@ -56,15 +56,27 @@ public sealed class DashboardQueryService : IDashboardQueryService
         var recentTickets = await query
             .OrderByDescending(ticket => ticket.CreatedAtUtc)
             .Take(5)
-            .Select(ticket => new DashboardRecentTicketDto(
-                ticket.Id,
-                ticket.Title,
-                ticket.Category.Name,
-                ticket.Status,
-                ticket.Priority,
-                ticket.CreatedByUserId,
-                ticket.AssignedToUserId,
-                ticket.CreatedAtUtc))
+            .GroupJoin(
+                _dbContext.Users.AsNoTracking(),
+                ticket => ticket.AssignedToUserId,
+                user => user.Id,
+                (ticket, users) => new
+                {
+                    Ticket = ticket,
+                    AssignedUsers = users
+                })
+            .SelectMany(
+                item => item.AssignedUsers.DefaultIfEmpty(),
+                (item, assignedUser) => new DashboardRecentTicketDto(
+                    item.Ticket.Id,
+                    item.Ticket.Title,
+                    item.Ticket.Category.Name,
+                    item.Ticket.Status,
+                    item.Ticket.Priority,
+                    item.Ticket.CreatedByUserId,
+                    item.Ticket.AssignedToUserId,
+                    assignedUser != null ? assignedUser.FullName : null,
+                    item.Ticket.CreatedAtUtc))
             .ToListAsync(cancellationToken);
 
         return new DashboardSummaryResponse(
