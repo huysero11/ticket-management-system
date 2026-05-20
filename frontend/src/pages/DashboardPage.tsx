@@ -84,10 +84,10 @@ export default function DashboardPage() {
     },
     {
       title: "Assigned To",
-      dataIndex: "assignedToUserId",
-      key: "assignedToUserId",
-      render: (assignedToUserId: string | null) =>
-        assignedToUserId ?? "Unassigned",
+      dataIndex: "assignedToUserName",
+      key: "assignedToUserName",
+      render: (_: string | null, record) =>
+        record.assignedToUserName ?? "Unassigned",
     },
     {
       title: "Created At",

@@ -8,6 +8,7 @@ export interface DashboardRecentTicket {
     priority: TicketPriority;
     createdByUserId: string;
     assignedToUserId: string | null;
+    assignedToUserName: string | null;
     createdAtUtc: string;
 }
 
