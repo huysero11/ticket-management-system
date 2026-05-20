@@ -11,6 +11,7 @@ public sealed record TicketDto(
     TicketPriority Priority,
     Guid CreatedByUserId,
     Guid? AssignedToUserId,
+    string? AssignedToUserName,
     DateTime CreatedAtUtc,
     DateTime? UpdatedAtUtc
 );

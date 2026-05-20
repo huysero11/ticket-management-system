@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
-import { Button, Card, Form, Select, Space, Table, Typography } from "antd";
+import {
+  Button,
+  Card,
+  Form,
+  Select,
+  Space,
+  Table,
+  Typography,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { PlusOutlined, ReloadOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
@@ -114,10 +122,10 @@ export default function TicketListPage() {
     },
     {
       title: "Assigned To",
-      dataIndex: "assignedToUserId",
-      key: "assignedToUserId",
-      render: (assignedToUserId: string | null) =>
-        assignedToUserId ?? "Unassigned",
+      dataIndex: "assignedToUserName",
+      key: "assignedToUserName",
+      render: (_: string | null, record) =>
+        record.assignedToUserName ?? "Unassigned",
     },
     {
       title: "Created At",
@@ -128,7 +136,7 @@ export default function TicketListPage() {
   ];
 
   return (
-    <Space orientation="vertical" size="large" style={{ width: "100%" }}>
+    <Space direction="vertical" size="large" style={{ width: "100%" }}>
       <Space
         align="center"
         style={{
